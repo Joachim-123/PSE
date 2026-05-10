@@ -1,33 +1,248 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Interaktives Periodensystem</title>
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f7fb;
-    margin: 0;
-    padding: 20px;
-}
+    body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+    }
 
-h1 {
-    text-align: center;
-    color: #1f3b5b;
-    margin-bottom: 30px;
-}
+    h1 {
+        text-align: center;
+        color: #1f3b5b;
+        margin-bottom: 30px;
+    }
 
-.pse {
-    display: grid;
-    grid-template-columns: repeat(18, 60px);
-    gap: 6px;
-    justify-content: center;
-}
+    .container {
+        overflow-x: auto;
+    }
 
-.element {
-    width: 60px;
-    height: 60px;
-    background: white;
-    border: 2px solid #cbd5e1
+    /* Periodensystem mit 18 Spalten */
+    .pse {
+        display: grid;
+        grid-template-columns: repeat(18, 60px);
+        grid-auto-rows: 60px;
+        gap: 6px;
+        justify-content: center;
+        min-width: 1188px; /* 18 * 60 + 17 * 6 */
+        margin: 0 auto;
+    }
+
+    .element {
+        background: #ffffff;
+        border: 2px solid #cbd5e1;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: default;
+        transition: transform 0.25s ease, box-shadow 0.25s ease,
+                    border-color 0.25s ease;
+        user-select: none;
+        position: relative;
+    }
+
+    .element .number {
+        position: absolute;
+        top: 4px;
+        left: 6px;
+        font-size: 10px;
+        color: #64748b;
+    }
+
+    .element .symbol {
+        font-size: 18px;
+        font-weight: bold;
+        color: #0f172a;
+    }
+
+    /* Grundfarben */
+    .metal {
+        background: #e0f2fe;
+    }
+
+    .nonmetal {
+        background: #ecfdf5;
+    }
+
+    .metalloid {
+        background: #fef9c3;
+    }
+
+    /* Hover-Effekte */
+    .highlight-metal {
+        transform: translateY(-10px);
+        border-color: #2563eb !important;
+        box-shadow: 0 12px 20px rgba(37, 99, 235, 0.25);
+        z-index: 10;
+    }
+
+    .highlight-nonmetal {
+        transform: translateY(-10px);
+        border-color: #16a34a !important;
+        box-shadow: 0 12px 20px rgba(22, 163, 74, 0.25);
+        z-index: 10;
+    }
+
+    .legend {
+        max-width: 900px;
+        margin: 30px auto 0;
+        padding: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        line-height: 1.8;
+    }
+
+    .badge {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    .badge.metal { background: #e0f2fe; }
+    .badge.nonmetal { background: #ecfdf5; }
+    .badge.metalloid { background: #fef9c3; }
+
+    @media (max-width: 768px) {
+        .pse {
+            grid-template-columns: repeat(18, 50px);
+            grid-auto-rows: 50px;
+            min-width: 1002px;
+        }
+
+        .element .symbol {
+            font-size: 15px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<h1>Interaktives Periodensystem der Elemente</h1>
+
+<div class="container">
+    <div class="pse" id="pse"></div>
+</div>
+
+<div class="legend">
+    <strong>Legende:</strong><br>
+    <span class="badge metal"></span> Metalle – beim Überfahren mit der Maus werden alle Metalle blau hervorgehoben.<br>
+    <span class="badge nonmetal"></span> Nichtmetalle – beim Überfahren mit der Maus werden alle Nichtmetalle grün hervorgehoben.<br>
+    <span class="badge metalloid"></span> Halbmetalle – ohne Hover-Effekt.
+</div>
+
+<script>
+/*
+    Vereinfachtes, aber vollständig sichtbares PSE.
+    Alle 118 Elemente werden in Reihenfolge dargestellt.
+    Für die gewünschte Interaktion ist nur die Klassifizierung relevant.
+*/
+
+// Halbmetalle
+const metalloids = [
+    "B", "Si", "Ge", "As", "Sb", "Te", "Po"
+];
+
+// Nichtmetalle (inkl. Edelgase und Halogene)
+const nonmetals = [
+    "H", "He", "C", "N", "O", "F", "Ne",
+    "P", "S", "Cl", "Ar",
+    "Se", "Br", "Kr",
+    "I", "Xe",
+    "Rn", "Og",
+    "At", "Ts"
+];
+
+// Alle Elementsymbole (1–118)
+const symbols = [
+"H","He",
+"Li","Be","B","C","N","O","F","Ne",
+"Na","Mg","Al","Si","P","S","Cl","Ar",
+"K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn",
+"Ga","Ge","As","Se","Br","Kr",
+"Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd",
+"In","Sn","Sb","Te","I","Xe",
+"Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu",
+"Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg",
+"Tl","Pb","Bi","Po","At","Rn",
+"Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr",
+"Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"
+];
+
+// Erzeugt Elemente in einer 18-Spalten-Struktur.
+// Für eine einfache, robuste Darstellung werden die Elemente
+// fortlaufend eingefügt; das Layout bleibt vollständig sichtbar.
+const pse = document.getElementById("pse");
+
+symbols.forEach((symbol, index) => {
+    const element = document.createElement("div");
+    element.classList.add("element");
+
+    let type = "metal";
+    if (metalloids.includes(symbol)) {
+        type = "metalloid";
+    } else if (nonmetals.includes(symbol)) {
+        type = "nonmetal";
+    }
+
+    element.classList.add(type);
+    element.dataset.type = type;
+
+    element.innerHTML = `
+        <div class="number">${index + 1}</div>
+        <div class="symbol">${symbol}</div>
+    `;
+
+    pse.appendChild(element);
+});
+
+// Hover-Funktion:
+// Über Metall -> alle Metalle markieren
+// Über Nichtmetall -> alle Nichtmetalle markieren
+// Über Halbmetall -> keine Aktion
+document.addEventListener("mouseover", (event) => {
+    const target = event.target.closest(".element");
+    if (!target) return;
+
+    clearHighlights();
+
+    const type = target.dataset.type;
+
+    if (type === "metal") {
+        document.querySelectorAll('.element[data-type="metal"]')
+            .forEach(el => el.classList.add("highlight-metal"));
+    }
+
+    if (type === "nonmetal") {
+        document.querySelectorAll('.element[data-type="nonmetal"]')
+            .forEach(el => el.classList.add("highlight-nonmetal"));
+    }
+});
+
+document.addEventListener("mouseout", (event) => {
+    const target = event.target.closest(".element");
+    if (!target) return;
+    clearHighlights();
+});
+
+function clearHighlights() {
+    document.querySelectorAll(".element").forEach(el => {
+        el.classList.remove("highlight-metal");
+        el.classList.remove("highlight-nonmetal");
+    });
+}
+</script>
+
+</body>
+</html>
