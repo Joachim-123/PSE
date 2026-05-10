@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> Periodensystem der Elemente </title>
+<title>Periodensystem der Elemente</title>
 
 <style>
 body {
@@ -23,6 +23,7 @@ h1 {
     overflow-x: auto;
 }
 
+/* 18 Spalten wie im echten PSE */
 .pse {
     display: grid;
     grid-template-columns: repeat(18, 60px);
@@ -34,18 +35,21 @@ h1 {
 }
 
 .element {
-    background: #ffffff;
+    position: relative;
     border: 2px solid #cbd5e1;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: relative;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     user-select: none;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
 }
 
+/* Ordnungszahl */
 .number {
     position: absolute;
     top: 4px;
@@ -54,6 +58,7 @@ h1 {
     color: #64748b;
 }
 
+/* Elementsymbol */
 .symbol {
     font-size: 18px;
     font-weight: bold;
@@ -62,15 +67,15 @@ h1 {
 
 /* Grundfarben */
 .metal {
-    background: #dbeafe;   /* Blau */
-}
-
-.nonmetal {
-    background: #dcfce7;   /* Grün */
+    background: #dbeafe;   /* blau */
 }
 
 .metalloid {
-    background: #fef08a;   /* Gelb */
+    background: #dcfce7;   /* grün */
+}
+
+.nonmetal {
+    background: #fef9c3;   /* gelb */
 }
 
 /* Hover-Effekte */
@@ -83,8 +88,8 @@ h1 {
 
 .highlight-nonmetal {
     transform: translateY(-10px);
-    border-color: #16a34a !important;
-    box-shadow: 0 12px 20px rgba(22, 163, 74, 0.25);
+    border-color: #eab308 !important;
+    box-shadow: 0 12px 20px rgba(234, 179, 8, 0.25);
     z-index: 10;
 }
 
@@ -121,11 +126,11 @@ h1 {
     background: #3b82f6;
 }
 
-.legend-nonmetal {
+.legend-metalloid {
     background: #22c55e;
 }
 
-.legend-metalloid {
+.legend-nonmetal {
     background: #facc15;
 }
 
@@ -144,7 +149,7 @@ h1 {
 </head>
 <body>
 
-<h1> Periodensystem der Elemente</h1>
+<h1>Periodensystem der Elemente</h1>
 
 <div class="container">
     <div class="pse" id="pse"></div>
@@ -157,13 +162,13 @@ h1 {
     </div>
 
     <div class="legend-item">
-        <div class="legend-color legend-nonmetal"></div>
-        <span>Nichtmetalle - grün</span>
+        <div class="legend-color legend-metalloid"></div>
+        <span>Halbmetalle - grün</span>
     </div>
 
     <div class="legend-item">
-        <div class="legend-color legend-metalloid"></div>
-        <span>Halbmetalle - gelb</span>
+        <div class="legend-color legend-nonmetal"></div>
+        <span>Nichtmetalle - gelb</span>
     </div>
 </div>
 
@@ -173,7 +178,7 @@ const metalloids = [
     "B", "Si", "Ge", "As", "Sb", "Te", "Po"
 ];
 
-// Nichtmetalle (inkl. Edelgase und Halogene)
+// Nichtmetalle
 const nonmetals = [
     "H", "He", "C", "N", "O", "F", "Ne",
     "P", "S", "Cl", "Ar",
@@ -183,7 +188,7 @@ const nonmetals = [
     "At", "Ts"
 ];
 
-// Alle Elementsymbole (1–118)
+// Alle Elementsymbole in Reihenfolge der Ordnungszahlen
 const symbols = [
 "H","He",
 "Li","Be","B","C","N","O","F","Ne",
@@ -199,9 +204,55 @@ const symbols = [
 "Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"
 ];
 
+// Echte Positionen im Periodensystem: [Symbol, Zeile, Spalte]
+const positions = [
+    ["H",1,1], ["He",1,18],
+
+    ["Li",2,1], ["Be",2,2],
+    ["B",2,13], ["C",2,14], ["N",2,15], ["O",2,16], ["F",2,17], ["Ne",2,18],
+
+    ["Na",3,1], ["Mg",3,2],
+    ["Al",3,13], ["Si",3,14], ["P",3,15], ["S",3,16], ["Cl",3,17], ["Ar",3,18],
+
+    ["K",4,1], ["Ca",4,2], ["Sc",4,3], ["Ti",4,4], ["V",4,5], ["Cr",4,6],
+    ["Mn",4,7], ["Fe",4,8], ["Co",4,9], ["Ni",4,10], ["Cu",4,11], ["Zn",4,12],
+    ["Ga",4,13], ["Ge",4,14], ["As",4,15], ["Se",4,16], ["Br",4,17], ["Kr",4,18],
+
+    ["Rb",5,1], ["Sr",5,2], ["Y",5,3], ["Zr",5,4], ["Nb",5,5], ["Mo",5,6],
+    ["Tc",5,7], ["Ru",5,8], ["Rh",5,9], ["Pd",5,10], ["Ag",5,11], ["Cd",5,12],
+    ["In",5,13], ["Sn",5,14], ["Sb",5,15], ["Te",5,16], ["I",5,17], ["Xe",5,18],
+
+    ["Cs",6,1], ["Ba",6,2], ["La",6,3],
+    ["Hf",6,4], ["Ta",6,5], ["W",6,6], ["Re",6,7], ["Os",6,8], ["Ir",6,9],
+    ["Pt",6,10], ["Au",6,11], ["Hg",6,12], ["Tl",6,13], ["Pb",6,14],
+    ["Bi",6,15], ["Po",6,16], ["At",6,17], ["Rn",6,18],
+
+    ["Fr",7,1], ["Ra",7,2], ["Ac",7,3],
+    ["Rf",7,4], ["Db",7,5], ["Sg",7,6], ["Bh",7,7], ["Hs",7,8], ["Mt",7,9],
+    ["Ds",7,10], ["Rg",7,11], ["Cn",7,12], ["Nh",7,13], ["Fl",7,14],
+    ["Mc",7,15], ["Lv",7,16], ["Ts",7,17], ["Og",7,18],
+
+    /* Lanthanoide */
+    ["Ce",9,4], ["Pr",9,5], ["Nd",9,6], ["Pm",9,7], ["Sm",9,8],
+    ["Eu",9,9], ["Gd",9,10], ["Tb",9,11], ["Dy",9,12], ["Ho",9,13],
+    ["Er",9,14], ["Tm",9,15], ["Yb",9,16], ["Lu",9,17],
+
+    /* Actinoide */
+    ["Th",10,4], ["Pa",10,5], ["U",10,6], ["Np",10,7], ["Pu",10,8],
+    ["Am",10,9], ["Cm",10,10], ["Bk",10,11], ["Cf",10,12], ["Es",10,13],
+    ["Fm",10,14], ["Md",10,15], ["No",10,16], ["Lr",10,17]
+];
+
+// Ordnungszahlen erzeugen
+const atomicNumbers = {};
+symbols.forEach((symbol, index) => {
+    atomicNumbers[symbol] = index + 1;
+});
+
 const pse = document.getElementById("pse");
 
-symbols.forEach((symbol, index) => {
+// Elemente erzeugen
+positions.forEach(([symbol, row, col]) => {
     const element = document.createElement("div");
     element.classList.add("element");
 
@@ -215,15 +266,19 @@ symbols.forEach((symbol, index) => {
     element.classList.add(type);
     element.dataset.type = type;
 
+    // Exakte Position im Grid
+    element.style.gridRow = row;
+    element.style.gridColumn = col;
+
     element.innerHTML = `
-        <div class="number">${index + 1}</div>
+        <div class="number">${atomicNumbers[symbol]}</div>
         <div class="symbol">${symbol}</div>
     `;
 
     pse.appendChild(element);
 });
 
-// Hover-Effekte
+// Hover-Funktionen
 document.addEventListener("mouseover", (event) => {
     const target = event.target.closest(".element");
     if (!target) return;
@@ -232,11 +287,13 @@ document.addEventListener("mouseover", (event) => {
 
     const type = target.dataset.type;
 
+    // Alle Metalle blau hervorheben
     if (type === "metal") {
         document.querySelectorAll('.element[data-type="metal"]')
             .forEach(el => el.classList.add("highlight-metal"));
     }
 
+    // Alle Nichtmetalle gelb hervorheben
     if (type === "nonmetal") {
         document.querySelectorAll('.element[data-type="nonmetal"]')
             .forEach(el => el.classList.add("highlight-nonmetal"));
@@ -246,9 +303,9 @@ document.addEventListener("mouseover", (event) => {
 });
 
 document.addEventListener("mouseout", (event) => {
-    const target = event.target.closest(".element");
-    if (!target) return;
-    clearHighlights();
+    if (event.target.closest(".element")) {
+        clearHighlights();
+    }
 });
 
 function clearHighlights() {
