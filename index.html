@@ -1,144 +1,145 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Interaktives Periodensystem</title>
 
 <style>
-    body {
-        margin: 0;
-        padding: 20px;
-        font-family: Arial, Helvetica, sans-serif;
-        background: #f4f7fb;
-    }
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+}
 
-    h1 {
-        text-align: center;
-        color: #1f3b5b;
-        margin-bottom: 30px;
-    }
+h1 {
+    text-align: center;
+    color: #1f3b5b;
+    margin-bottom: 30px;
+}
 
-    .container {
-        overflow-x: auto;
-    }
+.container {
+    overflow-x: auto;
+}
 
-    /* Periodensystem mit 18 Spalten */
+.pse {
+    display: grid;
+    grid-template-columns: repeat(18, 60px);
+    grid-auto-rows: 60px;
+    gap: 6px;
+    justify-content: center;
+    min-width: 1188px;
+    margin: 0 auto;
+}
+
+.element {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    user-select: none;
+}
+
+.number {
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    font-size: 10px;
+    color: #64748b;
+}
+
+.symbol {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0f172a;
+}
+
+/* Grundfarben */
+.metal {
+    background: #dbeafe;   /* Blau */
+}
+
+.nonmetal {
+    background: #dcfce7;   /* Grün */
+}
+
+.metalloid {
+    background: #fef08a;   /* Gelb */
+}
+
+/* Hover-Effekte */
+.highlight-metal {
+    transform: translateY(-10px);
+    border-color: #2563eb !important;
+    box-shadow: 0 12px 20px rgba(37, 99, 235, 0.25);
+    z-index: 10;
+}
+
+.highlight-nonmetal {
+    transform: translateY(-10px);
+    border-color: #16a34a !important;
+    box-shadow: 0 12px 20px rgba(22, 163, 74, 0.25);
+    z-index: 10;
+}
+
+/* Legende */
+.legend {
+    max-width: 900px;
+    margin: 30px auto 0;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.legend-item:last-child {
+    margin-bottom: 0;
+}
+
+.legend-color {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    margin-right: 12px;
+    border: 1px solid #94a3b8;
+}
+
+.legend-metal {
+    background: #3b82f6;
+}
+
+.legend-nonmetal {
+    background: #22c55e;
+}
+
+.legend-metalloid {
+    background: #facc15;
+}
+
+@media (max-width: 768px) {
     .pse {
-        display: grid;
-        grid-template-columns: repeat(18, 60px);
-        grid-auto-rows: 60px;
-        gap: 6px;
-        justify-content: center;
-        min-width: 1188px;
-        margin: 0 auto;
+        grid-template-columns: repeat(18, 50px);
+        grid-auto-rows: 50px;
+        min-width: 1002px;
     }
 
-    .element {
-        background: #ffffff;
-        border: 2px solid #cbd5e1;
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: default;
-        transition: transform 0.25s ease, box-shadow 0.25s ease,
-                    border-color 0.25s ease;
-        user-select: none;
-        position: relative;
+    .symbol {
+        font-size: 15px;
     }
-
-    .element .number {
-        position: absolute;
-        top: 4px;
-        left: 6px;
-        font-size: 10px;
-        color: #64748b;
-    }
-
-    .element .symbol {
-        font-size: 18px;
-        font-weight: bold;
-        color: #0f172a;
-    }
-
-    /* Grundfarben */
-    .metal {
-        background: #e0f2fe;
-    }
-
-    .nonmetal {
-        background: #ecfdf5;
-    }
-
-    .metalloid {
-        background: #fef9c3;
-    }
-
-    /* Hover-Effekte */
-    .highlight-metal {
-        transform: translateY(-10px);
-        border-color: #2563eb !important;
-        box-shadow: 0 12px 20px rgba(37, 99, 235, 0.25);
-        z-index: 10;
-    }
-
-    .highlight-nonmetal {
-        transform: translateY(-10px);
-        border-color: #16a34a !important;
-        box-shadow: 0 12px 20px rgba(22, 163, 74, 0.25);
-        z-index: 10;
-    }
-
-    .legend {
-        max-width: 900px;
-        margin: 30px auto 0;
-        padding: 20px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        line-height: 2;
-        font-size: 1rem;
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .badge {
-        display: inline-block;
-        width: 18px;
-        height: 18px;
-        border-radius: 4px;
-        border: 1px solid #94a3b8;
-    }
-
-    .badge.metal {
-        background: #e0f2fe;
-    }
-
-    .badge.nonmetal {
-        background: #ecfdf5;
-    }
-
-    .badge.metalloid {
-        background: #fef9c3;
-    }
-
-    @media (max-width: 768px) {
-        .pse {
-            grid-template-columns: repeat(18, 50px);
-            grid-auto-rows: 50px;
-            min-width: 1002px;
-        }
-
-        .element .symbol {
-            font-size: 15px;
-        }
-    }
+}
 </style>
 </head>
 <body>
@@ -151,15 +152,17 @@
 
 <div class="legend">
     <div class="legend-item">
-        <span class="badge metal"></span>
+        <div class="legend-color legend-metal"></div>
         <span>Metalle blau</span>
     </div>
+
     <div class="legend-item">
-        <span class="badge nonmetal"></span>
+        <div class="legend-color legend-nonmetal"></div>
         <span>Nichtmetalle grün</span>
     </div>
+
     <div class="legend-item">
-        <span class="badge metalloid"></span>
+        <div class="legend-color legend-metalloid"></div>
         <span>Halbmetalle gelb</span>
     </div>
 </div>
@@ -220,6 +223,7 @@ symbols.forEach((symbol, index) => {
     pse.appendChild(element);
 });
 
+// Hover-Effekte
 document.addEventListener("mouseover", (event) => {
     const target = event.target.closest(".element");
     if (!target) return;
@@ -237,6 +241,8 @@ document.addEventListener("mouseover", (event) => {
         document.querySelectorAll('.element[data-type="nonmetal"]')
             .forEach(el => el.classList.add("highlight-nonmetal"));
     }
+
+    // Halbmetalle: keine Aktion
 });
 
 document.addEventListener("mouseout", (event) => {
