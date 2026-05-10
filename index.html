@@ -30,7 +30,7 @@
         grid-auto-rows: 60px;
         gap: 6px;
         justify-content: center;
-        min-width: 1188px; /* 18 * 60 + 17 * 6 */
+        min-width: 1188px;
         margin: 0 auto;
     }
 
@@ -98,21 +98,35 @@
         background: white;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        line-height: 1.8;
+        line-height: 2;
+        font-size: 1rem;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .badge {
         display: inline-block;
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
         border-radius: 4px;
-        margin-right: 8px;
-        vertical-align: middle;
+        border: 1px solid #94a3b8;
     }
 
-    .badge.metal { background: #e0f2fe; }
-    .badge.nonmetal { background: #ecfdf5; }
-    .badge.metalloid { background: #fef9c3; }
+    .badge.metal {
+        background: #e0f2fe;
+    }
+
+    .badge.nonmetal {
+        background: #ecfdf5;
+    }
+
+    .badge.metalloid {
+        background: #fef9c3;
+    }
 
     @media (max-width: 768px) {
         .pse {
@@ -136,19 +150,21 @@
 </div>
 
 <div class="legend">
-    <strong>Legende:</strong><br>
-    <span class="badge metal"></span> Metalle – beim Überfahren mit der Maus werden alle Metalle blau hervorgehoben.<br>
-    <span class="badge nonmetal"></span> Nichtmetalle – beim Überfahren mit der Maus werden alle Nichtmetalle grün hervorgehoben.<br>
-    <span class="badge metalloid"></span> Halbmetalle – ohne Hover-Effekt.
+    <div class="legend-item">
+        <span class="badge metal"></span>
+        <span>Metalle blau</span>
+    </div>
+    <div class="legend-item">
+        <span class="badge nonmetal"></span>
+        <span>Nichtmetalle grün</span>
+    </div>
+    <div class="legend-item">
+        <span class="badge metalloid"></span>
+        <span>Halbmetalle gelb</span>
+    </div>
 </div>
 
 <script>
-/*
-    Vereinfachtes, aber vollständig sichtbares PSE.
-    Alle 118 Elemente werden in Reihenfolge dargestellt.
-    Für die gewünschte Interaktion ist nur die Klassifizierung relevant.
-*/
-
 // Halbmetalle
 const metalloids = [
     "B", "Si", "Ge", "As", "Sb", "Te", "Po"
@@ -180,9 +196,6 @@ const symbols = [
 "Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"
 ];
 
-// Erzeugt Elemente in einer 18-Spalten-Struktur.
-// Für eine einfache, robuste Darstellung werden die Elemente
-// fortlaufend eingefügt; das Layout bleibt vollständig sichtbar.
 const pse = document.getElementById("pse");
 
 symbols.forEach((symbol, index) => {
@@ -207,10 +220,6 @@ symbols.forEach((symbol, index) => {
     pse.appendChild(element);
 });
 
-// Hover-Funktion:
-// Über Metall -> alle Metalle markieren
-// Über Nichtmetall -> alle Nichtmetalle markieren
-// Über Halbmetall -> keine Aktion
 document.addEventListener("mouseover", (event) => {
     const target = event.target.closest(".element");
     if (!target) return;
